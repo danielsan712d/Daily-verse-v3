@@ -15,7 +15,7 @@
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background: #121212; /* Dark, focused background */
+            background: #121212;
             background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&q=80&w=2070');
             background-size: cover;
             background-position: center;
@@ -26,7 +26,6 @@
             min-height: 100vh;
         }
 
-        /* The Cross Symbol */
         .cross {
             width: 12px;
             height: 60px;
@@ -51,7 +50,7 @@
             padding: 4rem;
             border-radius: 8px;
             box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-            width: 80%; /* Makes it much bigger on the screen */
+            width: 85%;
             max-width: 900px;
             text-align: center;
             border: 1px solid rgba(0,0,0,0.1);
@@ -59,20 +58,34 @@
 
         #verse-text {
             font-family: 'Playfair Display', serif;
-            font-size: 2.5rem; /* Larger font size */
+            font-size: 2.5rem;
             line-height: 1.3;
             color: var(--navy);
             margin-bottom: 2rem;
         }
 
-        #verse-ref {
+        .ref-box {
+            margin-bottom: 3rem;
+        }
+
+        #ref {
             font-weight: 600;
             color: var(--gold);
             font-size: 1.4rem;
             text-transform: uppercase;
             letter-spacing: 3px;
-            margin-bottom: 3rem;
-            display: block;
+            display: inline;
+        }
+
+        #translation-tag {
+            font-size: 0.9rem;
+            color: #999;
+            font-weight: 400;
+            margin-left: 10px;
+            border: 1px solid #ddd;
+            padding: 2px 8px;
+            border-radius: 4px;
+            vertical-align: middle;
         }
 
         .btn-group {
@@ -97,18 +110,6 @@
 
         button:hover {
             background-color: #2a3a7c;
-            letter-spacing: 2px;
-        }
-
-        .outline-btn {
-            background: transparent;
-            color: var(--navy);
-            border: 2px solid var(--navy);
-        }
-
-        .outline-btn:hover {
-            background: var(--navy);
-            color: white;
         }
 
         footer {
@@ -118,6 +119,12 @@
             border-top: 1px solid #ddd;
             padding-top: 20px;
         }
+
+        @media (max-width: 600px) {
+            .main-container { padding: 2rem; width: 90%; }
+            #verse-text { font-size: 1.8rem; }
+            .btn-group { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
@@ -126,42 +133,45 @@
         <div class="cross"></div>
         
         <div id="verse-text">"Loading the Word..."</div>
-        <div id="verse-ref">Scripture</div>
+        
+        <div class="ref-box">
+            <span id="ref">Scripture</span>
+            <span id="translation-tag">Loading...</span>
+        </div>
 
         <div class="btn-group">
-            <button onclick="window.location.reload()">Next Verse</button>
-            <button class="outline-btn" onclick="copyVerse()">Share Word</button>
+            <button onclick="getNewVerse()">Next Verse</button>
         </div>
 
         <footer>
-            Official Daily Verse Portal &bull; Updated for 2026
+            Official Daily Verse Portal &bull; 2026
         </footer>
     </div>
 
     <script>
-        const verses = ["John 3:16", "Romans 8:28", "Psalm 23:1", "Proverbs 3:5-6", "Philippians 4:13", "Isaiah 40:31", "Matthew 11:28", "Joshua 1:9", "1 Corinthians 13:4"];
+        const verses = ["John 3:16", "Romans 8:28", "Psalm 23:1", "Proverbs 3:5", "Philippians 4:13", "Isaiah 40:31", "Joshua 1:9"];
         
-        async function getVerse() {
-            const randomVerse = verses[Math.floor(Math.random() * verses.length)];
+        async function getNewVerse() {
+            const randomPick = verses[Math.floor(Math.random() * verses.length)];
             try {
-                const response = await fetch(`https://bible-api.com/${randomVerse}`);
+                // Fetching from the API
+                const response = await fetch(`https://bible-api.com/${randomPick}`);
                 const data = await response.json();
+                
                 document.getElementById('verse-text').innerText = `"${data.text.trim()}"`;
                 document.getElementById('ref').innerText = data.reference;
+                
+                // Show the translation name (e.g., WEB, KJV)
+                document.getElementById('translation-tag').innerText = data.translation_name;
+                
             } catch (e) {
-                document.getElementById('verse-text').innerText = "Faith is the substance of things hoped for, the evidence of things not seen.";
-                document.getElementById('verse-ref').innerText = "Hebrews 11:1";
+                document.getElementById('verse-text').innerText = "The Lord is my shepherd.";
+                document.getElementById('ref').innerText = "Psalm 23:1";
+                document.getElementById('translation-tag').innerText = "WEB";
             }
         }
 
-        function copyVerse() {
-            const t = document.getElementById('verse-text').innerText;
-            const r = document.getElementById('verse-ref').innerText;
-            navigator.clipboard.writeText(t + " - " + r);
-            alert("Copied to clipboard!");
-        }
-
-        getVerse();
+        getNewVerse();
     </script>
 </body>
 </html>

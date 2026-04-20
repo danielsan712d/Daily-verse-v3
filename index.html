@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Verse | Official</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef2f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 600px;
+            text-align: center;
+            border-top: 6px solid #2c3e50;
+        }
+        h1 { color: #2c3e50; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2rem; }
+        #verse { font-size: 1.8rem; font-style: italic; color: #333; margin-bottom: 1.5rem; line-height: 1.4; }
+        #reference { font-weight: bold; color: #3498db; font-size: 1.1rem; }
+        .loading { color: #888; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Daily Scripture</h1>
+    <div id="display-area">
+        <p id="verse" class="loading">Fetching today's word...</p>
+        <p id="reference"></p>
+    </div>
+</div>
+
+<script>
+    async function getDailyVerse() {
+        const verseEl = document.getElementById('verse');
+        const refEl = document.getElementById('reference');
+
+        try {
+            // Using a highly reliable public Bible API
+            const response = await fetch('https://bible-api.com/john+3:16'); 
+            // Note: I set this to a specific famous verse first to ensure it works. 
+            // To make it truly random, we use a random endpoint below:
+            const randomRes = await fetch('https://labs.bible.org/api/?passage=random&type=json');
+            const data = await randomRes.json();
+
+            verseEl.classList.remove('loading');
+            verseEl.innerText = `"${data[0].text.trim()}"`;
+            refEl.innerText = `${data[0].bookname} ${data[0].chapter}:${data[0].verse}`;
+        } catch (error) {
+            console.error("Error fetching verse:", error);
+            verseEl.innerText = "For God so loved the world, that he gave his only begotten Son.";
+            refEl.innerText = "John 3:16";
+            verseEl.classList.remove('loading');
+        }
+    }
+
+    getDailyVerse();
+</script>
+</body>
+</html>
